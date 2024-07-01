@@ -1,0 +1,42 @@
+#Script de compilation de mon projet 
+
+#Library for RTL & BENCH
+rm -rf ./LIB/LIB_RTL
+rm -rf ./LIB/LIB_BENCH
+
+vlib ./LIB/LIB_RTL
+vmap LIB_RTL ./LIB/LIB_RTL
+vlib ./LIB/LIB_BENCH
+vmap LIB_BENCH ./LIB/LIB_BENCH
+
+#Compilation package ASCON
+vlog -sv +acc -svinputport=net -work LIB_RTL ./SRC/RTL/ascon_pack.sv
+
+#Compilation SRC RTL
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/constant_addition.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/substitution_table.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/substitution_cover.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/linear_diffusion.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/register_w_en.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/state_register_w_en.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/compteur_blocs.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/compteur_round.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/mux_state.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/xor_begin_perm.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/xor_end_perm.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/permutationBloc_decrypt.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/FSM_decrypt.sv
+vlog -sv +acc -svinputport=net -work LIB_RTL -L LIB_RTL ./SRC/RTL/ASCON_Top_decrypt.sv
+
+
+#Compilation SRC BENCH
+vlog -sv +acc -svinputport=net -work LIB_BENCH -L LIB_RTL ./SRC/BENCH/constant_addition_tb.sv
+vlog -sv +acc -svinputport=net -work LIB_BENCH -L LIB_RTL ./SRC/BENCH/substitution_cover_tb.sv
+vlog -sv +acc -svinputport=net -work LIB_BENCH -L LIB_RTL ./SRC/BENCH/linear_diffusion_tb.sv
+vlog -sv +acc -svinputport=net -work LIB_BENCH -L LIB_RTL ./SRC/BENCH/permutationBloc_decrypt_tb.sv
+vlog -sv +acc -svinputport=net -work LIB_BENCH -L LIB_RTL ./SRC/BENCH/ASCON_Top_decrypt_tb.sv
+
+
+#Lancement de la simulation de la test bench
+vsim -L LIB_RTL LIB_BENCH.ASCON_Top_decrypt_tb &
+#vsim -L LIB_RTL LIB_BENCH.adder_tb -do ./SRC/BENCH/simul_adder_tb.do &
